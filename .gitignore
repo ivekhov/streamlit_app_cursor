@@ -15,3 +15,4 @@ venv/
 
 # Ignore all files in the data directory
 data/*
+.DS_Store

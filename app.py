@@ -2,6 +2,17 @@ import streamlit as st
 import sqlite3
 import hashlib
 import os
+import sys
+
+# Add the current directory to Python path to allow importing the page modules
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+# Import page modules
+from pages.about.content import content_page
+from pages.about.about import about_page
+from pages.models.model_a import model_a_page
+from pages.models.model_b import model_b_page
+import session_util
 
 # Page configuration
 st.set_page_config(
@@ -18,6 +29,12 @@ if 'username' not in st.session_state:
     st.session_state.username = None
 if 'is_admin' not in st.session_state:
     st.session_state.is_admin = False
+
+# Try to restore session from file
+if not st.session_state.authenticated:
+    session_restored = session_util.restore_session()
+    if session_restored:
+        print(f"Session restored for user: {st.session_state.username}")
 
 def hash_password(password):
     """Hash the password using SHA-256."""
@@ -287,9 +304,16 @@ def login_page():
                 
                 is_valid, is_admin = verify_user(username, password)
                 if is_valid:
+                    # Update session state
                     st.session_state.authenticated = True
                     st.session_state.username = username
                     st.session_state.is_admin = is_admin
+                    st.session_state.current_page = 'default'
+                    st.session_state.current_section = None
+                    
+                    # Save session to file for persistence
+                    session_util.save_session(username, is_admin, 'default', None)
+                    
                     st.success(f"Login successful! Welcome {username}")
                     st.rerun()
                 else:
@@ -408,6 +432,8 @@ def main():
     # Initialize page state if not present
     if 'current_page' not in st.session_state:
         st.session_state.current_page = 'default'
+    if 'current_section' not in st.session_state:
+        st.session_state.current_section = None
     
     # Show login page if not authenticated
     if not st.session_state.authenticated:
@@ -419,10 +445,16 @@ def main():
     
     # Logout button
     if st.sidebar.button("Logout"):
+        # Clear session state
         st.session_state.authenticated = False
         st.session_state.username = None
         st.session_state.is_admin = False
         st.session_state.current_page = 'default'
+        st.session_state.current_section = None
+        
+        # Clear session file
+        session_util.clear_session()
+        
         st.rerun()
     
     # User info
@@ -433,27 +465,139 @@ def main():
         st.sidebar.markdown("---")
         if st.sidebar.button("Admin Panel"):
             st.session_state.current_page = 'admin'
+            st.session_state.current_section = None
+            
+            # Update session file with new page state
+            session_util.save_session(
+                st.session_state.username, 
+                st.session_state.is_admin,
+                'admin',
+                None
+            )
+            
             st.rerun()
     
-    # Section navigation
+    # Navigation sections
     st.sidebar.markdown("---")
-    st.sidebar.header("Sections")
     
-    # Only show section selection if not in admin page
-    if st.session_state.current_page != 'admin':
+    # Create an expander for About section
+    about_expander = st.sidebar.expander("About", expanded=(st.session_state.current_section == 'about'))
+    with about_expander:
+        if st.button("Content", key="about_content"):
+            st.session_state.current_page = 'about_content'
+            st.session_state.current_section = 'about'
+            
+            # Update session file with new navigation state
+            session_util.save_session(
+                st.session_state.username, 
+                st.session_state.is_admin,
+                'about_content',
+                'about'
+            )
+            
+            st.rerun()
+        if st.button("About", key="about_about"):
+            st.session_state.current_page = 'about_about'
+            st.session_state.current_section = 'about'
+            
+            # Update session file with new navigation state
+            session_util.save_session(
+                st.session_state.username, 
+                st.session_state.is_admin,
+                'about_about',
+                'about'
+            )
+            
+            st.rerun()
+    
+    # Create an expander for Models section
+    models_expander = st.sidebar.expander("Models", expanded=(st.session_state.current_section == 'models'))
+    with models_expander:
+        if st.button("Model A", key="models_a"):
+            st.session_state.current_page = 'model_a'
+            st.session_state.current_section = 'models'
+            
+            # Update session file with new navigation state
+            session_util.save_session(
+                st.session_state.username, 
+                st.session_state.is_admin,
+                'model_a',
+                'models'
+            )
+            
+            st.rerun()
+        if st.button("Model B", key="models_b"):
+            st.session_state.current_page = 'model_b'
+            st.session_state.current_section = 'models'
+            
+            # Update session file with new navigation state
+            session_util.save_session(
+                st.session_state.username, 
+                st.session_state.is_admin,
+                'model_b',
+                'models'
+            )
+            
+            st.rerun()
+    
+    # Original sections (Section 1 and Section 2)
+    st.sidebar.markdown("---")
+    st.sidebar.header("Original Sections")
+    
+    if st.session_state.current_page not in ['admin', 'about_content', 'about_about', 'model_a', 'model_b']:
         section = st.sidebar.radio("Select Section", ["Section 1", "Section 2"])
         
+        # Update session when section changes
         if section == "Section 1":
+            # Update session state with current section
+            if st.session_state.current_page != 'default' or section != "Section 1":
+                st.session_state.current_page = 'default'
+                # Save session file with new page state
+                session_util.save_session(
+                    st.session_state.username,
+                    st.session_state.is_admin,
+                    'default',
+                    None
+                )
             section1_page()
         else:
+            # Update session state with current section
+            if st.session_state.current_page != 'section2':
+                st.session_state.current_page = 'section2'
+                # Save session file with new page state
+                session_util.save_session(
+                    st.session_state.username,
+                    st.session_state.is_admin,
+                    'section2',
+                    None
+                )
             section2_page()
-    else:
+    elif st.session_state.current_page == 'admin':
         # Display admin page
         admin_page()
-        
+    elif st.session_state.current_page == 'about_content':
+        content_page()
+    elif st.session_state.current_page == 'about_about':
+        about_page()
+    elif st.session_state.current_page == 'model_a':
+        model_a_page()
+    elif st.session_state.current_page == 'model_b':
+        model_b_page()
+    
+    # Back button only on admin page
+    if st.session_state.current_page == 'admin':
         # Back button
         if st.sidebar.button("Back to Main"):
             st.session_state.current_page = 'default'
+            
+            # Update session file with new navigation state
+            session_util.save_session(
+                st.session_state.username, 
+                st.session_state.is_admin,
+                'default',
+                None
+            )
+            
             st.rerun()
 
 if __name__ == "__main__":

@@ -540,39 +540,42 @@ def main():
             
             st.rerun()
     
+
+    # ----
     # Original sections (Section 1 and Section 2)
-    st.sidebar.markdown("---")
-    st.sidebar.header("Original Sections")
+    # st.sidebar.markdown("---")
+    # st.sidebar.header("Original Sections")
     
-    if st.session_state.current_page not in ['admin', 'about_content', 'about_about', 'model_a', 'model_b']:
-        section = st.sidebar.radio("Select Section", ["Section 1", "Section 2"])
+    # if st.session_state.current_page not in ['admin', 'about_content', 'about_about', 'model_a', 'model_b']:
+    #     section = st.sidebar.radio("Select Section", ["Section 1", "Section 2"])
         
-        # Update session when section changes
-        if section == "Section 1":
-            # Update session state with current section
-            if st.session_state.current_page != 'default' or section != "Section 1":
-                st.session_state.current_page = 'default'
-                # Save session file with new page state
-                session_util.save_session(
-                    st.session_state.username,
-                    st.session_state.is_admin,
-                    'default',
-                    None
-                )
-            section1_page()
-        else:
-            # Update session state with current section
-            if st.session_state.current_page != 'section2':
-                st.session_state.current_page = 'section2'
-                # Save session file with new page state
-                session_util.save_session(
-                    st.session_state.username,
-                    st.session_state.is_admin,
-                    'section2',
-                    None
-                )
-            section2_page()
-    elif st.session_state.current_page == 'admin':
+    #     # Update session when section changes
+    #     if section == "Section 1":
+    #         # Update session state with current section
+    #         if st.session_state.current_page != 'default' or section != "Section 1":
+    #             st.session_state.current_page = 'default'
+    #             # Save session file with new page state
+    #             session_util.save_session(
+    #                 st.session_state.username,
+    #                 st.session_state.is_admin,
+    #                 'default',
+    #                 None
+    #             )
+    #         section1_page()
+    #     else:
+    #         # Update session state with current section
+    #         if st.session_state.current_page != 'section2':
+    #             st.session_state.current_page = 'section2'
+    #             # Save session file with new page state
+    #             session_util.save_session(
+    #                 st.session_state.username,
+    #                 st.session_state.is_admin,
+    #                 'section2',
+    #                 None
+    #             )
+    #         section2_page()
+    # ----
+    if st.session_state.current_page == 'admin':
         # Display admin page
         admin_page()
     elif st.session_state.current_page == 'about_content':

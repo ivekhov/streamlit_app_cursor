@@ -1,7 +1,10 @@
 import streamlit as st
 
 def model_b_page():
+    
     st.title("Model B")
+
+
     st.write("This is the Model B page in the Models section.")
     
     st.subheader("Model B Specifications")

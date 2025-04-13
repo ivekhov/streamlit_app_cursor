@@ -403,24 +403,6 @@ def admin_page():
     finally:
         conn.close()
 
-def section1_page():
-    """Content for Section 1."""
-    st.title("Section 1")
-    st.write("This is the content of Section 1")
-    
-    # Add your section 1 content here
-    st.write("Welcome to Section 1!")
-    st.write("This is a sample page with some content.")
-
-def section2_page():
-    """Content for Section 2."""
-    st.title("Section 2")
-    st.write("This is the content of Section 2")
-    
-    # Add your section 2 content here
-    st.write("Welcome to Section 2!")
-    st.write("This is another sample page with different content.")
-
 def main():
     """Main application logic."""
     # Initialize database
@@ -442,7 +424,75 @@ def main():
     
     # Sidebar navigation
     st.sidebar.title("Navigation")
+
+
+# ------------------------------------------------------------
+    # ABOUT
+    about_expander = st.sidebar.expander("About", expanded=(st.session_state.current_section == 'about'))
+    with about_expander:
+        if st.button("Content", key="about_content"):
+            st.session_state.current_page = 'about_content'
+            st.session_state.current_section = 'about'
+            
+            # Update session file with new navigation state
+            session_util.save_session(
+                st.session_state.username, 
+                st.session_state.is_admin,
+                'about_content',
+                'about'
+            )
+            
+            st.rerun()
+        if st.button("About", key="about_about"):
+            st.session_state.current_page = 'about_about'
+            st.session_state.current_section = 'about'
+            
+            # Update session file with new navigation state
+            session_util.save_session(
+                st.session_state.username, 
+                st.session_state.is_admin,
+                'about_about',
+                'about'
+            )
+            
+            st.rerun()
     
+    # Create an expander for Models section
+    # MODELS
+    models_expander = st.sidebar.expander("Models", expanded=(st.session_state.current_section == 'models'))
+    with models_expander:
+        if st.button("Model A", key="models_a"):
+            st.session_state.current_page = 'model_a'
+            st.session_state.current_section = 'models'
+            
+            # Update session file with new navigation state
+            session_util.save_session(
+                st.session_state.username, 
+                st.session_state.is_admin,
+                'model_a',
+                'models'
+            )
+            
+            st.rerun()
+        if st.button("Model B", key="models_b"):
+            st.session_state.current_page = 'model_b'
+            st.session_state.current_section = 'models'
+            
+            # Update session file with new navigation state
+            session_util.save_session(
+                st.session_state.username, 
+                st.session_state.is_admin,
+                'model_b',
+                'models'
+            )
+            
+            st.rerun()
+    
+# ------------------------------------------------------------
+
+
+
+
     # Logout button
     if st.sidebar.button("Logout"):
         # Clear session state
@@ -480,101 +530,8 @@ def main():
     # Navigation sections
     st.sidebar.markdown("---")
     
-    # Create an expander for About section
-    about_expander = st.sidebar.expander("About", expanded=(st.session_state.current_section == 'about'))
-    with about_expander:
-        if st.button("Content", key="about_content"):
-            st.session_state.current_page = 'about_content'
-            st.session_state.current_section = 'about'
-            
-            # Update session file with new navigation state
-            session_util.save_session(
-                st.session_state.username, 
-                st.session_state.is_admin,
-                'about_content',
-                'about'
-            )
-            
-            st.rerun()
-        if st.button("About", key="about_about"):
-            st.session_state.current_page = 'about_about'
-            st.session_state.current_section = 'about'
-            
-            # Update session file with new navigation state
-            session_util.save_session(
-                st.session_state.username, 
-                st.session_state.is_admin,
-                'about_about',
-                'about'
-            )
-            
-            st.rerun()
-    
-    # Create an expander for Models section
-    models_expander = st.sidebar.expander("Models", expanded=(st.session_state.current_section == 'models'))
-    with models_expander:
-        if st.button("Model A", key="models_a"):
-            st.session_state.current_page = 'model_a'
-            st.session_state.current_section = 'models'
-            
-            # Update session file with new navigation state
-            session_util.save_session(
-                st.session_state.username, 
-                st.session_state.is_admin,
-                'model_a',
-                'models'
-            )
-            
-            st.rerun()
-        if st.button("Model B", key="models_b"):
-            st.session_state.current_page = 'model_b'
-            st.session_state.current_section = 'models'
-            
-            # Update session file with new navigation state
-            session_util.save_session(
-                st.session_state.username, 
-                st.session_state.is_admin,
-                'model_b',
-                'models'
-            )
-            
-            st.rerun()
-    
 
-    # ----
-    # Original sections (Section 1 and Section 2)
-    # st.sidebar.markdown("---")
-    # st.sidebar.header("Original Sections")
-    
-    # if st.session_state.current_page not in ['admin', 'about_content', 'about_about', 'model_a', 'model_b']:
-    #     section = st.sidebar.radio("Select Section", ["Section 1", "Section 2"])
-        
-    #     # Update session when section changes
-    #     if section == "Section 1":
-    #         # Update session state with current section
-    #         if st.session_state.current_page != 'default' or section != "Section 1":
-    #             st.session_state.current_page = 'default'
-    #             # Save session file with new page state
-    #             session_util.save_session(
-    #                 st.session_state.username,
-    #                 st.session_state.is_admin,
-    #                 'default',
-    #                 None
-    #             )
-    #         section1_page()
-    #     else:
-    #         # Update session state with current section
-    #         if st.session_state.current_page != 'section2':
-    #             st.session_state.current_page = 'section2'
-    #             # Save session file with new page state
-    #             session_util.save_session(
-    #                 st.session_state.username,
-    #                 st.session_state.is_admin,
-    #                 'section2',
-    #                 None
-    #             )
-    #         section2_page()
-    # ----
+
     if st.session_state.current_page == 'admin':
         # Display admin page
         admin_page()
